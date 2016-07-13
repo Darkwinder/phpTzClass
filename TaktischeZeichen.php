@@ -1,50 +1,35 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: dirk
- * Date: 12.07.2016
- * Time: 13:29
+ * Class phpTzClass.
+ * Author: Dirk Blanckenhorn, dirk@blanckenhorn.de
+ * License: https://opensource.org/licenses/MIT
+ *
+ * Version: 0.0.1
+ *
+ * Usage:
+ * $img = new TaktischeZeichen("Person","grün",200);
+ * First Value can be: [[Taktische Formation|Taktische Einheit|Taktischer Verband|Dienststelle]|[Befehlsstelle]|[Stelle|Einrichtung]|[Person]|[Maßnahme]|[Anlass|Ereignis]|[Gefahr]|[ortsgebunden|ortsfest]|[Gebäude]]
+ * Second Value can be: [rot|blau|weiß|gelb|grün|orange]
+ * Third Value is the desired width in pixel. Each sign has a separate maximum value for that - see attribute "width" in node "grundzeichen/element" at file tz.xml included in this package
+ * $img->output('svg'); // can be "svg", "jpg", "jpeg", "png", "gif", default is "svg"
+ *
+ * Examples:
+ * Policeofficer:
+ * $img = new TaktischeZeichen("Person","grün",200); $img->output('svg');
+ * Fire Rescure Unit:
+ * $img = new TaktischeZeichen("Taktische Einheit","rot",100); $img->output('svg');
+ *
+ * TODO : Adding additional structures within the signs and around of them as described in THW-DV1-102
  */
 
 namespace de\gis4thw;
 use Exception;
 use SimpleXMLElement;
 
-/*
- * System der Taktischen Zeichen:
- * 1.) Art des Grundzeichens (Stelle, Person, Gebiet etc.), Pflicht
- * 2.) Füllfarbe (rot, blau, weiß, gelb, grün, orange), Pflicht
- * 3.) Kurzbezeichnung der Organisation rechts unten, Eigentlich optional, hier Pflicht
- * 4.) Symbol der Fachaufgabe innen, Optional
- * 5.) Funktion, Typ der Einheit innen links oben, optional
- * 6.) Größenordnung (Zug, Trupp, Verband) oben, optional
- * 7.) Zeitangaben links, optional
- * 8.) Beweglichkeit, Richtung, Mannschaftsstärke unten, optional
- * 9.) Herkunft und Gliederung rechts, Optional
- *
- *
- *
- *
- */
-
-
 /**
- * Class tzNode
- * @property \SimpleXMLElement[] grundzeichen
+ * Class TaktischeZeichen
  * @package de\gis4thw
  */
-class tzXmlElement extends SimpleXMLElement {
-    /**
-     * @param $basic_sign
-     * @return mixed
-     */
-    public function get_element_by_basic_sign_id($basic_sign)
-    {
-        return $this->xpath("grundzeichen/element/bedeutungen[bedeutung='".$basic_sign."']/parent::*");
-    }
-
-}
-
 class TaktischeZeichen
 {
     const BORDER_WIDTH = 10;
@@ -53,8 +38,6 @@ class TaktischeZeichen
 
     protected $width, $height;
 
-    private $basic_sign_id;
-    private $basecolour_id;
     private $svg;
     private $ratio;
     private $basecolour;
@@ -75,11 +58,12 @@ class TaktischeZeichen
      * @param $basecolour : Colour to be filled with
      * @param $targetwidth : Desired width of the image in pixel - the height is calculated dynamically through the ratio
      * @internal param $width
+     * @throws Exception
      */
     function __construct($basic_sign, $basecolour, $targetwidth) {
         if(file_exists($this::CONFIG_FILENAME)) {
 
-            $xml = new tzXmlElement($this::CONFIG_FILENAME,0,TRUE);
+            $xml = new simpleXmlElement($this::CONFIG_FILENAME,0,TRUE);
             $this->base_sign_id = $xml->xpath("grundzeichen/element/bedeutungen[bedeutung='".$basic_sign."']/../@nr")[0]->__toString();
             $this->width = $xml->xpath("grundzeichen/element/bedeutungen[bedeutung='".$basic_sign."']/../@width")[0]->__toString();
             $this->height = $xml->xpath("grundzeichen/element/bedeutungen[bedeutung='".$basic_sign."']/../@height")[0]->__toString();
@@ -98,33 +82,18 @@ class TaktischeZeichen
             $this->svg = str_replace("fill=\"white\"","fill=\"".$this->basecolour."\"",$this->svg);
             $this->svg = str_replace("stroke=\"black\"","stroke=\"".$this->bordercolour."\"",$this->svg);
             $this->svg = str_replace("stroke-width=\"10\"","stroke-width=\"".$this::BORDER_WIDTH."\"",$this->svg);
-           //echo("<pre>");
-
-            //print_r($xml->xpath("farbgebung/element[@name='".$basecolour."']/@base-colour")[0]->__toString());
-            //die();
         }
         else
         {
-            die('Fehler: Konnte Steuerdatei '.$this::CONFIG_FILENAME.' nicht laden.');
+            throw new Exception('Error: Configuration File '.$this::CONFIG_FILENAME.' not found.');
         }
         return $this;
     }
 
-    function create($basic_sign_id = 1, $basecolour_id = 2, $width = 200) {
-        if($basic_sign_id==0) $basic_sign_id=1;
-        if($basecolour_id==0) $basecolour_id=2;
-        $this->basic_sign_id = $basic_sign_id;
-        $this->basecolour_id = $basecolour_id;
-        $this->basecolour = TaktischeZeichen::$system[2][$basecolour_id]['base-colour'];
-        $this->linecolour = TaktischeZeichen::$system[2][$basecolour_id]['line-colour'];
-        $this->bordercolour = TaktischeZeichen::$system[2][$basecolour_id]['border-colour'];
-        $this->width = $width;
-        $this->ratio = TaktischeZeichen::$system[1][$basic_sign_id]['ratio'];
-        $this->height = round($width/$this->ratio);
-        $this->svg = $this->convert_svg_template(TaktischeZeichen::$system[1][$basic_sign_id]['svg_template']);
-        return $this;
-    }
-
+    /**Output of the generated Image file
+     * @param string $output_Format (possible values are: "svg", "jpg", "jpeg", "png", "gif")
+     * @throws Exception
+     */
     function output($output_Format = "svg")
     {
         if($this->svg) {
@@ -165,7 +134,7 @@ class TaktischeZeichen
         }
         else
         {
-            exit("<br>Fehler: Kein SVG an Output übergeben");
+            throw new Exception('No SVG data in output routine');
         }
     }
 
