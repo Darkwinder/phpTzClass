@@ -1,0 +1,20 @@
+Usage:
+
+$img = new TaktischeZeichen("Person","grün",200);
+
+First Value can be: [[Taktische Formation|Taktische Einheit|Taktischer Verband|Dienststelle]|[Befehlsstelle]|[Stelle|Einrichtung]|[Person]|[Maßnahme]|[Anlass|Ereignis]|[Gefahr]|[ortsgebunden|ortsfest]|[Gebäude]]
+Second Value can be: [rot|blau|weiß|gelb|grün|orange]
+Third Value is the desired width in pixel. Each sign has a separate maximum value for that - see attribute "width" in node "grundzeichen/element" at file tz.xml included in this package
+
+$img->output('svg'); // can be "svg", "jpg", "jpeg", "png", "gif", default is "svg"
+
+Examples:
+
+Policeofficer:
+$img = new TaktischeZeichen("Person","grün",200); $img->output('svg');
+
+Fire Rescure Unit:
+$img = new TaktischeZeichen("Taktische Einheit","rot",100); $img->output('svg');
+
+TODO: Adding additional structures within the signs and around of them as described in THW-DV1-102
+Known Bugs: scaling does ust work properly on svg, not on png, jpg, gif
