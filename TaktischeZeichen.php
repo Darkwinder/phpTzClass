@@ -44,14 +44,6 @@ class TaktischeZeichen
     private $bordercolour;
     private $linecolour;
 
-
-    function draw_svg($shape = "rect", $startx = 0, $starty = 0, $max_width = 0, $max_height = 0, $width = "", $height = "", $fill = "#FFFFFF", $border_width = 0, $border_colour = "#000000")
-    {
-        if(substr($width,-1,1)=="%" && intval($max_width)>0) { $width=intval($width)/100*$max_width;} else { $width=intval($width); }
-        if(substr($height,-1,1)=="%" && intval($max_height)>0) { $height=intval($height)/100*$max_height;} else { $height=intval($height); }
-        return "<".$shape." x=\"".$startx."\" y=\"".$starty."\" width=\"".$width."\" height=\"".$height."\" fill=\"".$fill."\" stroke-width=\"".$border_width."\" stroke=\"".$border_colour."\" />";
-    }
-
     /**
      * TaktischeZeichen constructor.
      * @param $basic_sign : String with the name of the basic sign element
