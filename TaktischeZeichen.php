@@ -120,13 +120,13 @@ class TaktischeZeichen
     /**
      * TaktischeZeichen constructor.
      * @param $basic_sign : String with the name of the basic sign element
-     * @param $fachaufgabe : Specific Mission
+     * @param $specialized_task : Specific Mission
      * @param $basecolour : Colour to be filled with
      * @param $targetwidth : Desired width of the image in pixel - the height is calculated dynamically through the ratio
      * @throws Exception
      * @internal param $width
      */
-    function __construct($basic_sign, $fachaufgabe, $basecolour, $targetwidth) {
+    function __construct($basic_sign="Taktische Einheit", $specialized_task="Technische Hilfeleistung", $basecolour="blau", $targetwidth="200") {
         $this->transparent=true;
         if(file_exists($this::CONFIG_FILENAME)) {
             $xml = new simpleXmlElement($this::CONFIG_FILENAME,0,TRUE);
@@ -142,7 +142,7 @@ class TaktischeZeichen
             $this->svgdom = new svgDOMDocument($this->height,$this->width);
             $svg="";
             foreach($xml->xpath("grundzeichen/element/bedeutungen[bedeutung='".$basic_sign."']/../svg/*") as $svgbasicsign) { $svg .= $svgbasicsign->asXML(); }
-            foreach($xml->xpath("fachaufgaben/element/bedeutungen[bedeutung='".$fachaufgabe."']/../svg/*") as $svgfachaufgabe) { $svg .= $svgfachaufgabe->asXML(); }
+            foreach($xml->xpath("fachaufgaben/element/bedeutungen[bedeutung='".$specialized_task."']/../svg/*") as $svgfachaufgabe) { $svg .= $svgfachaufgabe->asXML(); }
             $svg = str_replace("fill=\"\"","fill=\"".$this->basecolour."\"",$svg);
             $svg = str_replace("stroke=\"\"","stroke=\"".$this->bordercolour."\"",$svg);
             $this->svgelement=$this->svgdom->createDocumentFragment(); // create nothing
