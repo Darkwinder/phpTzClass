@@ -23,3 +23,4 @@ $img = new TaktischeZeichen("Taktische Einheit","Kampfmittelräumung","grün",15
 
 
 TODO: Adding additional structures within the signs and around of them as described in THW-DV1-102
+TODO: Bugfix fachaufgaben not in center properly (except base-element Taktische Einheit)
