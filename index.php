@@ -8,7 +8,7 @@ use de\gis4thw\TaktischeZeichen;
 
 include("TaktischeZeichen.php");
 
-$img = new TaktischeZeichen("Taktische Einheit","rot",200);
+$img = new TaktischeZeichen("Taktische Einheit","Sprengen","blau",400);
 
 $img->output('svg');
 
